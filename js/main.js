@@ -51,13 +51,13 @@ jQuery( "#parafrasear_tool_submit" ).click(function() {
         form.append("text", selection);
 
         var settings = {
-            "url": parafrasear_param['pluginsUrl']+"/parafrasear/requests/paraphraseRequest.php",
+            "url":parafrasear_param.ajax_url,
             "type": "POST",
-            "timeout": 0,
-            "processData": false,
-            "mimeType": "multipart/form-data",
-            "contentType": false,
-            "data": form,
+            data: {
+              action : 'paraphrase_result_action',
+              text: selection
+            },
+            
             beforeSend: function() {
                  jQuery('#parafrasear_tool_submit').attr('disabled',true);
                  jQuery('#parafrasear_tool_submit').text('Parafraseando...');
@@ -71,33 +71,35 @@ jQuery( "#parafrasear_tool_submit" ).click(function() {
           
           
           jQuery.ajax(settings).done(function (response) {
-            
-            // console.log(response);
 
             const obj = JSON.parse(response);
+
+           
                 
             if(obj.hasOwnProperty("error")){
               if(obj.error==false){
-                // const result  = obj.parafrasear;
+              
                 const result  = obj.result;
                 replaceSelectedText(result)
                 return;
               }
               if(obj.errortype==="empty-input"){
                 alert("¡Entrada vacía! Intente ingresar algo de texto en el cuadro de entrada.");
+                return;
               }
-              else if(obj.errortype==="modeerr"){
+              else if(obj.errortype==="string"){
+                alert("Ingrese solo la cadena");
+                return;
               }
               else{
                 alert("Algo malo paso. Actualiza la página e inténtalo de nuevo.");
+                return;
               }
               
-              return;
-              // grecaptcha.reset();
+              
             }
             else{
-                const result  = obj.boldResult;
-                // jQuery( "#out" ).html(result);
+                const result  = obj.result;
                 
                 var strippedHtml = result.replace(/<[^>]+>/g, '');
 

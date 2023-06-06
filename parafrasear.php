@@ -79,11 +79,8 @@ function paraphrase_result_action() {
   
   global $wpdb;
 
-  $text =  $wpdb->_real_escape($_POST['text']);
-   
-  $text = sanitize_text_field($text);
-
-  $text = esc_html($text);
+  $text = sanitize_text_field($_POST['text']);
+  $text = $wpdb->prepare('%s', $text);
 
              if(is_numeric($text))
              {
